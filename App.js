@@ -28,11 +28,22 @@ const testbleplx = Platform.select({
 
 type Props = {};
 
+var deviceRssiRec = 18787;
+
+const altDevRs = () =>{
+  deviceRssiRec = 2;
+}
+
 class bles extends Component{
 constructor() {
   super();
   this.manager = new BleManager();
   this.devicesScanned;
+  this.state = {
+    devRssi: 1,
+    devName: 1,
+    devId: 1,
+  }
 
 }
 
@@ -41,18 +52,45 @@ componentWillMount() {
 const subscription = this.manager.onStateChange((state) => {
       if (state === 'PoweredOn') {
 
-            this.manager.startDeviceScan(null, null, (error, device) => {
+            this.manager.startDeviceScan(null, null, (error,device) => {
                 if (error) {
                     Alert.alert('error on on scanAndConnect');
-
                 }
 
                 if (device.name === 'HMSoft') {
+
                     this.manager.stopDeviceScan();
 
                     device.connect().then((device) => {
-                      //Alert.alert('connnected');
-                      Alert.alert(readRSSIForDevice(this.device,null).then());
+                      return device.discoverAllServicesAndCharacteristics(device.id)
+                    })
+                    .then((device) => {
+                      device.readRSSI().then((device) => {
+                        this.state.devRssi = device.rssi;
+                        a='joa 414141';
+                        Alert.alert(device.rssi+' rssi' + 'a ' + a);
+
+                      })
+
+                        /*device.readRSSI()
+                          .then(()=>{
+                            Alert.alert(device.rssi+'faf');
+                            })
+                          .catch(()=>{
+                            Alert.alert('erro no rssi');
+                          })
+                          /*device.discoverAllServicesAndCharacteristics()
+                            .then(()=>{
+
+                            device.services()
+                              .then((fromResolve)=>{
+                                Alert.alert(fromResolve.forEach(function(item,array){
+                                  return item;}
+                                )+' hehe Borborema');
+                                })
+                          })*/
+
+
                       })
                 }
                   //Alert.alert(device.id);
@@ -64,7 +102,16 @@ const subscription = this.manager.onStateChange((state) => {
       }
   }, true);
   //return device.name;
+}
 
+render(){
+  this.componentWillMount();
+
+  return (
+      <Text>
+      oi {this.state.devRssi} olha o a ai
+      </Text>
+  );
 }
 
 }
@@ -73,11 +120,17 @@ export default class App extends Component<Props> {
 
 
 render() {
+    altDevRs();
     const blest= new bles();
       return (
+        <View style={styles.container}>
+
         <Text>
-        {blest.componentWillMount()}
+        {blest.render()}
+
+        {deviceRssiRec}
         </Text>
+        </View>
       );
 
   }
