@@ -28,23 +28,20 @@ const testbleplx = Platform.select({
 
 type Props = {};
 
-var deviceRssiRec = 18787;
+/*var deviceRssiScreen =2;
 
-const altDevRs = () =>{
-  deviceRssiRec = 2;
-}
+const altDevRs = (rssiScanneado) =>{
+  deviceRssiScreen = rssiScanneado;
+}*/
 
-class bles extends Component{
+class Bles extends Component{
 constructor() {
   super();
   this.manager = new BleManager();
-  this.devicesScanned;
   this.state = {
-    devRssi: 1,
-    devName: 1,
-    devId: 1,
-  }
-
+    rssiScanneado:1,
+    timePassed: false, };
+    distDev:1
 }
 
 componentWillMount() {
@@ -66,10 +63,14 @@ const subscription = this.manager.onStateChange((state) => {
                     })
                     .then((device) => {
                       device.readRSSI().then((device) => {
-                        this.state.devRssi = device.rssi;
-                        a='joa 414141';
-                        Alert.alert(device.rssi+' rssi' + 'a ' + a);
+                        this.state.rssiScanneado = device.rssi;
+                        //altDevRs(device.rssi);
 
+                        
+                        let MeasuredPower = -64;
+
+                        this.state.distDev = Math.pow(10,())
+                        //Alert.alert(device.rssi+' rssi '+ this.state.rssiScanneado);
                       })
 
                         /*device.readRSSI()
@@ -105,31 +106,32 @@ const subscription = this.manager.onStateChange((state) => {
 }
 
 render(){
-  this.componentWillMount();
+  let that = this;
 
-  return (
-      <Text>
-      oi {this.state.devRssi} olha o a ai
-      </Text>
-  );
+  setTimeout(function(){that.setState({timePassed: true})}, 500);
+
+  if (!that.state.timePassed){
+      return <Text>
+      LoadingRssi</Text>;
+    }else{
+      let rssiScren = this.state.rssiScanneado;
+      return (
+        <Text>
+        Rssi (dB): {rssiScren} - Distancia (m):
+        </Text>
+      );
+    }
 }
 
 }
 
 export default class App extends Component<Props> {
 
-
 render() {
-    altDevRs();
-    const blest= new bles();
+
       return (
         <View style={styles.container}>
-
-        <Text>
-        {blest.render()}
-
-        {deviceRssiRec}
-        </Text>
+        <Bles/>
         </View>
       );
 
